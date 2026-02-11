@@ -12,7 +12,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
-from pandas.util.testing import assert_series_equal
+from pandas.testing import assert_series_equal
 import pytest
 
 from urbanoccupants.hipf import fit_hipf, _all_residuals
@@ -87,7 +87,7 @@ def test_same_result_like_mlipf(reference_sample, expected_weights, controls_ind
     assert_weights_equal(expected_weights, weights)
 
 
-@pytest.mark.parametrize("tol", [(1), pytest.mark.xfail(0.1)])
+@pytest.mark.parametrize("tol", [1, pytest.param(0.1, marks=pytest.mark.xfail)])
 def test_converges(reference_sample, controls_households, controls_individuals, tol):
     weights = fit_hipf(
         reference_sample=reference_sample,

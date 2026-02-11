@@ -43,11 +43,20 @@ def population_cluster(path_to_seed, path_to_markov_ts, path_to_plot):
 
 
 def _convert_to_numerical_values(markov_ts):
-    color_markov_ts = markov_ts.copy()
-    color_markov_ts.replace(to_replace=uo.Activity.NOT_AT_HOME, value=0, inplace=True)
-    color_markov_ts.replace(to_replace=uo.Activity.SLEEP_AT_HOME, value=0.5, inplace=True)
-    color_markov_ts.replace(to_replace=uo.Activity.HOME, value=1.0, inplace=True)
-    return color_markov_ts
+    # Map Activity enums to their numeric values
+    # HOME=1 -> 1.0, SLEEP_AT_HOME=2 -> 0.5, NOT_AT_HOME=3 -> 0
+    mapping = {
+        uo.Activity.HOME: 1.0,
+        uo.Activity.SLEEP_AT_HOME: 0.5,
+        uo.Activity.NOT_AT_HOME: 0
+    }
+    # Convert the entire series/dataframe to numeric using map
+    if isinstance(markov_ts, pd.DataFrame):
+        color_markov_ts = markov_ts.applymap(lambda x: mapping.get(x, np.nan))
+    else:
+        color_markov_ts = markov_ts.map(mapping)
+    # Ensure float dtype
+    return color_markov_ts.astype(float)
 
 
 def _plot_heatmap(markov_ts, ax):

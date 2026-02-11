@@ -145,13 +145,13 @@ def _prepare_seed_index(seed):
 def _create_synthetic_population(seed, census_data_hh, census_data_ppl, config):
     random_hh_feature = list(census_data_hh.values())[0]
     regions = list(random_hh_feature.index)
-    controls_hh = {region: {str(feature): census_data_hh[feature].ix[region, :]
+    controls_hh = {region: {str(feature): census_data_hh[feature].loc[region, :]
                             for feature in config['household-features']}
                    for region in regions}
-    controls_ppl = {region: {str(feature): census_data_ppl[feature].ix[region, :]
+    controls_ppl = {region: {str(feature): census_data_ppl[feature].loc[region, :]
                              for feature in config['people-features']}
                     for region in regions}
-    number_households = {region: random_hh_feature.ix[region, :].sum() for region in regions}
+    number_households = {region: random_hh_feature.loc[region, :].sum() for region in regions}
     household_counter = count(start=1, step=1)
     household_ids = {region: [household_counter.__next__()
                               for _ in range(number_households[region])]

@@ -1,5 +1,8 @@
 from .person import Person, Activity, WeekMarkovChain
-from .census import GeographicalLayer
+try:
+    from .census import GeographicalLayer
+except Exception:
+    GeographicalLayer = None
 from .synthpop import PeopleFeature, HouseholdFeature, feature_id
 from .version import __version__
 from .utils import read_simulation_config

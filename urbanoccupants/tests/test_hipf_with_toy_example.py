@@ -9,7 +9,7 @@ from collections import namedtuple
 
 import pandas as pd
 import numpy as np
-from pandas.util.testing import assert_series_equal
+from pandas.testing import assert_series_equal
 import pytest
 
 from urbanoccupants.hipf import fit_hipf
@@ -133,7 +133,7 @@ def reference_sample(household_types):
     index = pd.MultiIndex.from_tuples(list(id_tuples), names=['household_id', 'person_id'])
     ref_sample = pd.DataFrame(index=index, columns=['a', 'alpha'])
     for ht in household_types:
-        ref_sample.ix[ht.household_ids[0]: ht.household_ids[-1], 'a'] = ht.a
+        ref_sample.loc[ht.household_ids[0]: ht.household_ids[-1], 'a'] = ht.a
         for p, alpha in enumerate(ht.alpha):
             ref_sample.loc[
                 (slice(ht.household_ids[0], ht.household_ids[-1]), p + 1),
@@ -153,9 +153,9 @@ def expected_weights(household_types, reference_sample):
     expected_weights[0] = 1.
     for ht in household_types:
         for household_id in ht.household_ids:
-            expected_weights.ix[household_id, 5] = ht.weights[0]
-            expected_weights.ix[household_id, 10] = ht.weights[1]
-            expected_weights.ix[household_id, 'infinity'] = ht.weights[2]
+            expected_weights.loc[household_id, 5] = ht.weights[0]
+            expected_weights.loc[household_id, 10] = ht.weights[1]
+            expected_weights.loc[household_id, 'infinity'] = ht.weights[2]
     return expected_weights
 
 

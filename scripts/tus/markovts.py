@@ -90,16 +90,35 @@ def _drop_nan(markov_ts):
     n_missing = markov_ts.isnull().sum()
     print("{:.2f}% of the diary entries are still missing and their diaries will be dropped."
           .format(n_missing / markov_ts.shape[0] * 100))
-    nan_mask = markov_ts.groupby(by=lambda index: (index[0], index[1], index[2], index[3]))\
-        .apply(lambda values: values.isnull().any())
-    return pd.DataFrame(markov_ts)[markov_ts.index.droplevel('time_of_day')
-                                   .isin(nan_mask[~nan_mask].index)]
+    # Find groups that have any NaN
+    has_nan_by_group = markov_ts.groupby(level=['SN1', 'SN2', 'SN3'])\
+        .apply(lambda values: values.isnull().any().any())
+    # Keep only groups without any NaN
+    valid_groups = has_nan_by_group[~has_nan_by_group].index
+    # Filter markov_ts to keep only rows in valid groups
+    markov_ts_indexed = markov_ts.copy()
+    if not isinstance(markov_ts_indexed.index, pd.MultiIndex):
+        return markov_ts
+    # Get the group identifiers for each row
+    group_cols = [markov_ts_indexed.index.get_level_values(name) for name in ['SN1', 'SN2', 'SN3']]
+    mask = (
+        group_cols[0].isin(valid_groups.get_level_values(0)) &
+        group_cols[1].isin(valid_groups.get_level_values(1)) &
+        group_cols[2].isin(valid_groups.get_level_values(2))
+    )
+    # Build composite mask checking all three levels match
+    mask = False
+    for valid_group in valid_groups:
+        mask = mask | (
+            (group_cols[0] == valid_group[0]) &
+            (group_cols[1] == valid_group[1]) &
+            (group_cols[2] == valid_group[2])
+        )
+    return pd.DataFrame(markov_ts)[mask]
 
 
 def _remove_individuals_with_less_than_two_diaries(markov_ts):
-    valid_mask = markov_ts.groupby([markov_ts.index.get_level_values('SN1'),
-                                    markov_ts.index.get_level_values('SN2'),
-                                    markov_ts.index.get_level_values('SN3')])\
+    valid_mask = markov_ts.groupby(level=['SN1', 'SN2', 'SN3'])\
         .apply(lambda values: len(values) == EXPECTED_NUMBER_OF_DIARY_ENTRIES)
     print('{} individuals have less than two diaries and will be removed.'
           .format(valid_mask.shape[0] - valid_mask.sum()))

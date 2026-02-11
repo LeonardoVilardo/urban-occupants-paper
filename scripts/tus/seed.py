@@ -48,8 +48,7 @@ def _map_to_internal_types(individual_data):
 
 
 def _filter_invalid_households(seed):
-    hh_groups = seed.groupby((seed.index.get_level_values('SN1'),
-                             seed.index.get_level_values('SN2')))
+    hh_groups = seed.groupby(level=['SN1', 'SN2'])
     households = hh_groups[HOUSEHOLD_TYPE_FEATURE_NAME].agg(['first', 'count'])
     households.rename(columns={'first': 'type'}, inplace=True)
     invalids = (

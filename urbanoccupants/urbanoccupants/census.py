@@ -15,7 +15,6 @@ import zipfile
 import requests
 import numpy as np
 import pandas as pd
-import geopandas as gpd
 
 from .types import AgeStructure, EconomicActivity, Qualification, HouseholdType, Pseudo
 
@@ -160,6 +159,7 @@ def read_haringey_shape_file(geographical_layer=GeographicalLayer.LSOA):
 
     Make sure to use requests_cache to cache the retrieved data.
     """
+    import geopandas as gpd
     r = requests.get(LONDON_BOUNDARY_FILE_URL)
     z = zipfile.ZipFile(io.BytesIO(r.content))
     with tempfile.TemporaryDirectory(prefix='london-boundary-files') as tmpdir:

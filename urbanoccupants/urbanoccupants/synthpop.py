@@ -92,11 +92,11 @@ class PeopleFeature(Enum):
         data = self._census_read_function(geographical_layer)
         if not self._includes_below_16:
             usual_residents = PeopleFeature.AGE.read_census_data(geographical_layer)
-            younger_than_sixteen = usual_residents.ix[:, :AgeStructure.AGE_15].sum(axis=1)
+            younger_than_sixteen = usual_residents.loc[:, :AgeStructure.AGE_15].sum(axis=1)
             data[self.uo_type.BELOW_16] = younger_than_sixteen
         if not self._includes_above_74:
             usual_residents = PeopleFeature.AGE.read_census_data(geographical_layer)
-            older_than_74 = usual_residents.ix[:, AgeStructure.AGE_75_TO_84:].sum(axis=1)
+            older_than_74 = usual_residents.loc[:, AgeStructure.AGE_75_TO_84:].sum(axis=1)
             data[self.uo_type.ABOVE_74] = older_than_74
         return data
 
@@ -212,7 +212,7 @@ def sample_citizen(param_tuple):
                    activeMetabolicRate=row.metabolic_heat_gain_active,
                    passiveMetabolicRate=row.metabolic_heat_gain_passive,
                    randomSeed=_citizen_random_seed(household.id, occupant_id))
-          for occupant_id, (index, row) in enumerate(seed.ix[household.seedId, :].iterrows())]
+          for occupant_id, (index, row) in enumerate(seed.loc[household.seedId, :].iterrows())]
           for household in households)))
 
 

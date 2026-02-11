@@ -13,11 +13,19 @@ test: | build
 
 tus-data: build/seed.pickle build/markov-ts.pickle
 
+uktus15-data: build/seed-uktus15.pickle build/markov-ts-uktus15.pickle
+
 build/seed.pickle: ./data/UKDA-4504-tab/tab/Individual_data_5.tab ./scripts/tus/seed.py | build
 	python ./scripts/tus/seed.py ./data/UKDA-4504-tab/tab/Individual_data_5.tab ./build/seed.pickle
 
+build/seed-uktus15.pickle: ./data/UKDA-4504-tab/tab/uktus15_individual.tab ./scripts/tus/seed_uktus15.py | build
+	python ./scripts/tus/seed_uktus15.py ./data/UKDA-4504-tab/tab/uktus15_individual.tab ./build/seed-uktus15.pickle
+
 build/markov-ts.pickle: ./data/UKDA-4504-tab/tab/diary_data_8.tab ./scripts/tus/markovts.py | build
 	python ./scripts/tus/markovts.py ./data/UKDA-4504-tab/tab/diary_data_8.tab ./build/markov-ts.pickle
+
+build/markov-ts-uktus15.pickle: ./data/UKDA-4504-tab/tab/uktus15_diary_wide.tab ./scripts/tus/markovts_uktus15.py | build
+	python ./scripts/tus/markovts_uktus15.py ./data/UKDA-4504-tab/tab/uktus15_diary_wide.tab ./build/markov-ts-uktus15.pickle
 
 build/feature-association.pickle build/ts-association.pickle: ./build/seed.pickle ./build/markov-ts.pickle ./scripts/tus/association.py
 	python ./scripts/tus/association.py ./build/seed.pickle ./build/markov-ts.pickle ./build/feature-association.pickle ./build/ts-association.pickle
@@ -30,6 +38,9 @@ build/ts-association.png: ./build/ts-association.pickle ./scripts/plot/associati
 
 build/population-cluster.png: ./build/seed.pickle ./build/markov-ts.pickle ./scripts/plot/popcluster.py
 	python ./scripts/plot/popcluster.py ./build/seed.pickle ./build/markov-ts.pickle ./build/population-cluster.png
+
+build/population-cluster-uktus15.png: ./build/seed-uktus15.pickle ./build/markov-ts-uktus15.pickle ./scripts/plot/popcluster.py
+	python ./scripts/plot/popcluster.py ./build/seed-uktus15.pickle ./build/markov-ts-uktus15.pickle ./build/population-cluster-uktus15.png
 
 build/sim-input.db: ./build/seed.pickle ./build/markov-ts.pickle ./config/default.yaml ./scripts/simulationinput.py
 	python ./scripts/simulationinput.py ./build/seed.pickle ./build/markov-ts.pickle ./config/default.yaml build/sim-input.db

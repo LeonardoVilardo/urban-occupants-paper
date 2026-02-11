@@ -286,8 +286,8 @@ class WeekMarkovChain():
     @staticmethod
     def _markov_chain(time_step, day_time_series, time_step_size):
         next_time_step = WeekMarkovChain._add_delta_to_time(time_step, time_step_size)
-        current_vector = day_time_series.ix[time_step]
-        next_vector = day_time_series.ix[next_time_step]
+        current_vector = day_time_series.loc[time_step]
+        next_vector = day_time_series.loc[next_time_step]
         chain_elements = [((current_state, next_state), WeekMarkovChain._probability(current_state,
                                                                                      next_state,
                                                                                      current_vector,
